@@ -61,6 +61,16 @@ git rm -f readme.txt  删除readme.txt的跟踪，并保留在本地。
 
 ---
 
+#### git commit --amend 修正最近一次提交
+
+- 想修改最近一次提交的提交信息,只需`git commit --amend`，在弹出的编辑器里修改提交信息，保存退出就可了。
+- 想要修改最后一次提交的实际内容: 修改文件内容后，暂存git add，再`git commit --amend`，还可再修改提交信息。
+- 如果之前的提交信息不需要修改，`--no-edit`选项可以跳过编辑器环节，即`git commit --amend --no-edit`
+
+如果已经push了，就不要修正。
+
+---
+
 撤销工作区的修改（git add前）：git checkout -- filename
 
 撤销stage里的修改（git add后 commit前）：git reset HEAD filename
@@ -77,7 +87,7 @@ HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版
 
 远程仓库使用的 Git 保存的简写与其对应的 URL:    git remote
 
-添加一个新的远程 Git 仓库，同时指定一个你可以轻松引用的简写: git remote add <shortname> <url> 
+添加一个新的远程 Git 仓库，同时指定一个你可以轻松引用的简写shortname: `git remote add  shortname url`
 
 git clone 命令克隆了一个仓库，命令会自动将其添加为远程仓库并默认以 “origin” 为简写。
 当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。
@@ -92,8 +102,6 @@ git clone 命令克隆了一个仓库，命令会自动将其添加为远程仓�
 合并分支：git merge branch-name
 
 删除分支：git branch -d branch-name
-
-从远程克隆仓库：git clone git@github.com:xxxx/pro.git
 
 git stash [指定的stash号]:存储当前工作状态，之后工作区是clean的，此时可以去修改bug去了
 
@@ -162,10 +170,6 @@ git merge experiment
 5. 在github上新建一个仓库
 6. `git remote add origin git@github.com:linsili/test.git`，关联本地和github的仓库
 7. `git push -u origin master`
-
----
-
-**修改commit的message**：
 
 ---
 
