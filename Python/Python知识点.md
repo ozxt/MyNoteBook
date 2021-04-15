@@ -60,3 +60,30 @@ python2：`python -m SimpleHTTPServer 9999`
 python3：`python -m http.server 9999`
 
 ---
+
+str(object)、print(object)、'{}'.format(object)这些尝试将对象转换为字符串的调用，会调用object的`__str__`方法。
+
+repr(object)或在解释器交互界面查看object时（直接输入object名称），会调用object的`__repr__`方法。
+
+`__str__`应侧重于可读性，返回简洁的文本表示；`__repr__`应侧重于无歧义的结果，明确这是个什么模块的什么类的对象，以便开发调试。应总是添加`__repr__`方法。`__str__`方法默认下会调用`__repr__`方法。
+
+格式化字符串支持的转换flag：`'!s'` 会对值调用 `str()`，`'!r'` 调用 `repr()`，`'!a'` 则调用 `ascii()`。
+
+```python
+class A:
+    def __init__(self):
+        pass
+    
+    def __str__(self):
+        return "__str__ for A"
+    
+    def __repr__(self):
+        return "__repr__ for A"
+    
+#解释器：
+"{!s}".format(A())     ->   '__str__ for A'
+"{!r}".format(A())     ->   '__repr__ for A'
+"{}".format(A())     ->   '__str__ for A'
+f'{A()!r}'      ->   '__repr__ for A'
+```
+
