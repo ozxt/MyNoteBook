@@ -18,33 +18,58 @@ Git的三个区域：
 
 删除文件：git rm filename
 
-git rm --cached readme1.txt  删除readme1.txt的跟踪，并保留在本地。
+git rm --cached readme.txt  删除readme.txt的跟踪，并保留在本地。
 
-git rm -f readme1.txt  删除readme1.txt的跟踪，并保留在本地。
+git rm -f readme.txt  删除readme.txt的跟踪，并保留在本地。
 
 修改更新文件：先git add，再git commit ；（git commit 只会提交stage里的修改）
+
+查看当期状态：git status
+
+---
+
+#### git log  显示从最近到最远的提交日志 
+
+- **--pretty=oneline** 用一行显示一次提交记录。可用的选项包括 oneline、short、full、fuller 和 format（用来定义自己的格式）
+- **--graph** 在日志旁以 ASCII 图形显示分支与合并历史
+-  **-p -2**   显示每次提交所引入的差异，-n 指定最近的n次
+- **--abbrev-commit**  仅显示 SHA-1 校验和所有 40 个字符中的前几个字符
+- **--oneline**     --pretty=oneline --abbrev-commit 合用的简写。
+- **--stat**        显示每次提交的文件修改统计信息
+- **--name-only**    仅在提交信息后显示已修改的文件清单。
+- **--relative-date**   使用较短的相对时间而不是完整格式显示日期（比如“2 weeks ago”)
+
+*git log --pretty=format 常用的选项*
+
+| 选项  | 说明                                          |
+| ----- | --------------------------------------------- |
+| `%H`  | 提交的完整哈希值                              |
+| `%h`  | 提交的简写哈希值                              |
+| `%T`  | 树的完整哈希值                                |
+| `%t`  | 树的简写哈希值                                |
+| `%P`  | 父提交的完整哈希值                            |
+| `%p`  | 父提交的简写哈希值                            |
+| `%an` | 作者名字                                      |
+| `%ae` | 作者的电子邮件地址                            |
+| `%ad` | 作者修订日期（可以用 --date=选项 来定制格式） |
+| `%ar` | 作者修订日期，按多久以前的方式显示            |
+| `%cn` | 提交者的名字                                  |
+| `%ce` | 提交者的电子邮件地址                          |
+| `%cd` | 提交日期                                      |
+| `%cr` | 提交日期（距今多长时间）                      |
+| `%s`  | 提交说明                                      |
+
+---
 
 撤销工作区的修改（git add前）：git checkout -- filename
 
 撤销stage里的修改（git add后 commit前）：git reset HEAD filename
-
-撤销提交到版本库里的修改：版本回退
-
-查看当期状态：git status
-
-显示从最近到最远的提交日志 git log ;
-
-git log --pretty=oneline 用一行显示一次提交记录
-
-git log --graph 图形显示分支路线
 
 将版本回退到上一个版本 git reset --hard HEAD^ ；
 
 HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版本
 
 跳到某一个版本  git reset --hard 12ea  (12ea是要跳到的那个版本的commit id前四位)
-
-查看命令历史 git reflog
 
 移动文件(改名)： git mv srcname dstname
 
@@ -139,4 +164,16 @@ git merge experiment
 7. `git push -u origin master`
 
 ---
+
+**修改commit的message**：
+
+---
+
+git 中文显示：
+
+```powershell
+git config --global core.quotepath false  # 关闭路径转义，这样就不会转义中文字符了
+git config --global i18n.commitencoding utf-8  #该命令表示提交命令的时候使用utf-8编码集提交
+git config --global i18n.logoutputencoding utf-8 #该命令表示日志输出时使用utf-8编码集显示
+```
 
