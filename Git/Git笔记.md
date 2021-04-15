@@ -50,9 +50,12 @@ HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版
 
 查看工作区和版本库里的区别：git diff HEAD(所有)  git diff -- filename(指定文件)
 
-写远程仓库使用的 Git 保存的简写与其对应的 URL: git remote -添加一个新的远程 Git 仓库，同时指定一个你可以轻松引用的简写: git remote add <shortname> <url> clone 命令克隆了一个仓库，命令会自动将其添加为远程仓库并默认以 “origin” 为简写。
+远程仓库使用的 Git 保存的简写与其对应的 URL:    git remote
 
-git fetch 命令会将数据拉取到你的本地仓库——它并不会自动合并或修改你当前的工作。当准备好时你必须手动将其合并入你的工作
+添加一个新的远程 Git 仓库，同时指定一个你可以轻松引用的简写: git remote add <shortname> <url> 
+
+git clone 命令克隆了一个仓库，命令会自动将其添加为远程仓库并默认以 “origin” 为简写。
+当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。
 
 
 创建分支：git branch branch-name
@@ -77,7 +80,7 @@ git stash drop: 删除stash的工作状态
 
 git stash pop:恢复工作状态并删除stash里的工作状态
 
-当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。
+git fetch 命令会将数据拉取到你的本地仓库——它并不会自动合并或修改你当前的工作。当准备好时你必须手动将其合并入你的工作。
 
 git pull 从远程抓取分支
 
@@ -85,9 +88,9 @@ git pull 从远程抓取分支
 
 git push origin branch-name 从本地推送分支branch-name到origin，如果失败，先pull
 
-从本地创建和远程分支对应的分支 git checkout -b branch-name origin/branch-name
+在本地创建和远程分支对应的分支 git checkout -b branch-name origin/branch-name
 
-建立本地分支和远程分支的关联 git branch --set-upstream-to=origin/master master
+建立远程分支和本地分支的关联 git branch --set-upstream-to=origin/master master
 
 密码缓存，输入一次后下次不用再输入，知道密码过期
 git config --global credential.helper cache 
@@ -125,4 +128,15 @@ git merge experiment
 
 ---
 
+#### 将本地仓库推送到github
+
+1. 若无仓库，则新建一个文件夹，cd，git init,
+2. 若是空仓库，就添加一个README，提交
+3. 若无SSH KEY，则`ssh-keygen -t rsa -C "comment"`，默认会在.ssh/目录下生成id_rsa和id_rsa.pub
+4. 复制id_rsa.pub的内容到github的setting里的NEW SSH KEY
+5. 在github上新建一个仓库
+6. `git remote add origin git@github.com:linsili/test.git`，关联本地和github的仓库
+7. `git push -u origin master`
+
+---
 
