@@ -4,6 +4,13 @@
 2, sudo mysql_secure_installation
 3， sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf #找到 bind-address 修改值为 0.0.0.0(如果需要远程访问)
 4， sudo /etc/init.d/mysql restart #重启mysql
+
+mysql8 修改密码：
+ALTER USER 'username'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+FLUSH PRIVILEGES;
+
+修改密码时遇到ERROR 1819 (HY000): Your password does not satisfy the current policy requirements：
+set global validate_password.policy=LOW; 
 ```
 
 ```mysql
@@ -17,7 +24,7 @@ mysql -u root -p 连接登陆到mysql
 查看表内有哪些列：show full columns from 表明;
 查看用户：select user,host from mysql.user;
 创建用户：create user '用户名'@'localhost' identified with mysql_native_password by '密码';
-修改用户密码：alter user '用户名'@'%' identified  by '密码';
+修改用户密码：alter user '用户名'@'localhost' identified  by '密码';
 授权：grant select,insert,update,delete on 数据库名.* to '用户名'@'localhost';
 全部授权：grant all privileges on 数据库名.* to '用户名'@'localhost';
 查看授权：show grants for "用户名"@'localhost';
@@ -25,5 +32,10 @@ mysql -u root -p 连接登陆到mysql
 删除用户：delete from mysql.user where user='用户名';
 立即启用修改：flush privileges;
 实时查看连接情况： show processlist; 
+```
+
+```sql
+安装MySQL Workbench
+https://www.how2shout.com/how-to/how-to-install-mysql-workbench-on-ubuntu-20-04-lts.html
 ```
 
