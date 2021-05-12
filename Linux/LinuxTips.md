@@ -42,18 +42,7 @@ txerr/s：每秒钟发送的坏数据包
 Ubuntu gnome 自带录屏 Shift+Ctrl+Alt+R
 画图 pencil
 截图 screenshot、shutter
-
----
-
-systemctl:管理服务
-
-查看系统运行的服务 ps aux | grep 'd$'
-查看服务状态 systemctl status mysql.service
-启动服务 systemctl start mysql.service
-关闭服务 systemctl stop mysql.service
-重启服务 systemctl restart mysql.service
-禁止自启 sudo systemctl disable mysql.service
-恢复自启 sudo systemctl enable mysql.service
+Ubuntu选区截图： shift+PrintScreen
 
 ---
 

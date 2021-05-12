@@ -106,9 +106,7 @@ varname=9
 # 引用变量
 echo $varname
 echo ${varname}  # 最好用这种方式
-# 变量是字符串时，可以用‘’或“”括住
-echo "${varname}"
-# “”
+
 ```
 
 
@@ -241,6 +239,50 @@ echo ${p: -4:2}  --> gh
 字符串拼接
 
 `把字符串，变量放在一起就可以；若有空格需加双引号括住`
+
+## 数组
+
+```shell
+一，普通数组（索引-值。索引为整数，从0开始）
+定义：
+array=(1 2 3 4 5)
+或
+array[0]=1
+array[1]=1
+array[2]="qq"
+
+使用：
+${array[1]}
+打印数组中所有的值： 
+echo ${array[*]}
+或 echo ${array[@]}
+数组长度：
+${#array[*]}
+
+二，关联数组（索引可以是任意文本）
+定义：
+先声明
+declare -A sarray
+后
+sarray=([key1]=val1 [key2]=val2 [key3]=val3)
+或
+sarray[key1]=val1
+sarray[key2]=val2
+sarray[key3]=val3
+
+使用：
+echo ${sarray[key1]}
+获取所有索引：
+${!sarray[*]}
+或  ${!sarray[@]}
+获取所有值：
+${sarray[*]}
+或  ${sarray[@]}
+数组长度：
+${#sarray[*]}
+```
+
+
 
 ## 函数
 
@@ -401,7 +443,7 @@ ls -lS --time-style=long-iso | awk 'BEGIN{
 }' 
 ```
 
-#### basename和 dirname
+#### basename
 
 `basename` 从路径中提取文件名
 
@@ -410,6 +452,8 @@ basename /home/ozxt/tmp.txt  -->  tmp.txt
 # 指定一个后缀，可以提取不带后缀的文件名
 basename /home/ozxt/tmp.txt .txt  -->  tmp
 ```
+
+#### dirname
 
 `dirname` 从路径中提取目录名
 
@@ -436,6 +480,33 @@ dirname /home/ozxt  --> /home
 -c 按字符分段；
 -b 按字节分段；
 ```
+
+#### date
+
+在类Unix系统中，日期被存储成一个整数，其大小是自时间标准时间（UTC）1970年1月1日0时0分0秒起所流逝的秒数。这个值称为纪元时或Unix时间。
+
+```shell
+date   # 日期 2021年 05月 12日 星期三 15:02:55 CST
+date +%s    # 打印纪元时  1620803172
+date --date "Thu Nov 18 08:07:21 CST 2010" +%s    # 将日期转换成纪元时
+格式化日期：
+date "+%d %B %Y"
+```
+
+| 日期内容               | 格式                            |
+| ---------------------- | ------------------------------- |
+| 星期                   | %a（例如Sat）%A(例如Saturday)   |
+| 月                     | %b（例如Nov）%B（例如November） |
+| 日                     | %d（例如31）                    |
+| 固定格式日期(mm/dd/yy) | %D（例如10/18/21）              |
+| 年                     | %Y（例如21）%y（例如2021）      |
+| 小时                   | %H或%I（例如08）                |
+| 分钟                   | %M（例如34）                    |
+| 秒                     | %S（例如45）                    |
+| 纳秒                   | %N                              |
+| Unix纪元时（秒）       | %s                              |
+
+
 
 #### grep
 
@@ -563,8 +634,20 @@ echo dd0d0ddd | tr -s d  # 输出：d0d0d
 
 ```
 
+#### tee
+
+读取stdin流，重定向到文件，并提供一份给后续命令作为stdin
+
+```shell
+-n # 追加写
+
+ls | tee output | cat -n
+```
+
+
 
 #### sed
+
 流编辑器
 
 ```shell
@@ -605,7 +688,28 @@ du -h --max-depth 1    显示当前目录下的目录大小
 -u 排序并去重
 ```
 
+#### systemctl
+
+Control the systemd system and service manager
+
+```shell
+语法
+systemctl [OPTIONS...] COMMAND [UNIT...]
+
+systemctl list-units  # 列出服务
+systemctl status mysql.service  # 查看服务状态 
+systemctl start mysql.service  # 启动服务 
+systemctl stop mysql.service  # 关闭服务 
+systemctl restart mysql.service  # 重启服务 
+systemctl disable mysql.service  # 禁止自启 
+systemctl enable mysql.service  # 恢复自启 
+
+```
+
+
+
 #### uniq
+
 去重（相邻行去重，所以去重前须排序）
 ```shell
 -n 按数值的大小排序
@@ -631,6 +735,7 @@ rsync -av source/ destination  # 把./source目录下的内容递归地复制到
 rsync -av source/ username@remote_host:destination # 远程同步
 --delete  # 删除只存在于目标目录、不存在于源目录的文件。
 --exclude "*.txt"  # 添加该选项指定通配符以排除备份。该例不对以.txt结尾的文件备份。
+--exclude {"*.txt","*.cache","tmp"}
 --exclude-from pattern_file  #或者指定一个列表文件，内里指定要排除的文件# 
 -r # 表示递归子目录
 -a # 可替代-r，除了递归同步外，还会同步元信息（比如修改时间，权限）。
@@ -642,3 +747,15 @@ rsync -av source/ username@remote_host:destination # 远程同步
 # 从ps aux中提取pid
 ps aux | grep process_name | tr -s ' '| cut -d ' ' -f 2
 ```
+
+```shell
+# 查看进程运行时的环境变量；由于cat命令输出的各环境变量之间有\0分割，不便查看，用tr替换。
+cat /proc/$PID/environ | tr '\0' '\n'
+```
+
+```powershell
+# 打印彩色输出
+\e[1;{颜色码}m   将颜色设置成指定颜色。\e[0m重置颜色
+比如： echo -e "\e[1;31m hello" 将输出红色颜色的hello
+```
+
