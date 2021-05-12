@@ -83,7 +83,14 @@ HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版
 
 移动文件(改名)： git mv srcname dstname
 
+---
+
+#### git diff
+
 查看工作区和版本库里的区别：git diff HEAD(所有)  git diff -- filename(指定文件)
+查看两个提交的差异：git diff commit-id commit-id
+
+---
 
 远程仓库使用的 Git 保存的简写与其对应的 URL:    git remote
 
@@ -92,16 +99,22 @@ HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版
 git clone 命令克隆了一个仓库，命令会自动将其添加为远程仓库并默认以 “origin” 为简写。
 当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。
 
+---
+
+#### git branch
 
 创建分支：git branch branch-name
-
 切换到分支：git checkout branch-name
-
 查看分支：git branch
-
 合并分支：git merge branch-name
-
 删除分支：git branch -d branch-name
+建立远程分支和本地分支的关联 git branch --set-upstream-to=origin/master master
+查看本地分支和远程分支的关联 git branch -vv
+列出所有远程分支 git branch -r
+列出所有本地分支和远程分支 git branch -a
+
+
+---
 
 git stash [指定的stash号]:存储当前工作状态，之后工作区是clean的，此时可以去修改bug去了
 
@@ -123,7 +136,7 @@ git push origin branch-name 从本地推送分支branch-name到origin，如果�
 
 在本地创建和远程分支对应的分支 git checkout -b branch-name origin/branch-name
 
-建立远程分支和本地分支的关联 git branch --set-upstream-to=origin/master master
+
 
 密码缓存，输入一次后下次不用再输入，知道密码过期
 git config --global credential.helper cache 
