@@ -155,7 +155,7 @@ do
 done
 echo "##############################################"
 
-echo '"$@"'  #  这可能是你想要的，传入多少参数就是多少，不会拆开空格
+echo '"$@"'  #  传入多少参数就是多少，不会拆开空格
 for v in "$@"
 do
 	echo "${v}"
@@ -321,7 +321,7 @@ fname var1 var2...
 if
 
 ```shell
-if condition
+if condition;
 then
 	# do something
 fi
@@ -330,7 +330,7 @@ fi
 for
 
 ```shell
-for i in seq
+for i in seq;
 do
 	# do something
 done
@@ -339,7 +339,7 @@ done
 while
 
 ```shell
-while condition
+while condition;
 do
     # do something
 done
@@ -347,7 +347,7 @@ done
 
 ```shell
 循环执行指令：
-while true; do netstat -ntp | grep 5000 ;sleep 0.5; done
+while :; do netstat -ntp | grep 5000 ;sleep 0.5; done
 ```
 
 
@@ -357,11 +357,14 @@ while true; do netstat -ntp | grep 5000 ;sleep 0.5; done
 
 ```shell
 用方括号括住条件判断，两边须留空格 [ 2 -gt 1 ]
+比较字符串时最好用双中括号[[ $str1 = $str2 ]]
+比较还可以用test命令  test $var -eq 1
 # 数字
 -eq  -ne  -lt -gt -le  -ge  用于比较数字:
 # 字符串
 != = 	用于比较字符串
 str  	直接引用字符串，非空时为真
+-n str  字符串非空时为真
 -z str 	字符串空时为真
 # 逻辑运算
 -a -o ! 与或非
@@ -468,7 +471,12 @@ dirname /home/ozxt  --> /home
 
 计算文件md5值
 
-`md5sum filename`
+```shell
+md5sum filename
+md5sum -c file.md5sum  # 检查是否一致
+```
+
+
 
 #### cut
 
@@ -525,9 +533,34 @@ date "+%d %B %Y"
 `find [path] [option] [action]`
 
 ```shell
-# 找出
+find . -name *.txt -print # -print指明打印出匹配的文件，用'\n'进行分隔
+find . -name *.txt -print0 # 用'\0'进行分隔
 find /home -name "*.txt"  # /home目录下以“.txt”结尾的文件
 find /home -iname "*.txt"  # 同上，但忽略大小写
+find . \( -name "*.txt" -o -name "*.py" \) # or
+find /home ! -name "*.txt"  # /home目录下不是以“.txt”结尾的文件
+-maxdepth n # 指定最大搜索深度 1是当前目录，3是从1搜索到3级目录
+-mindepth n  # 指定开始的最小深度 3是从第三级开始搜索
+-type f # 文件类型：普通文件
+-type l # 文件类型：符号链接
+-type d # 文件类型：目录
+-type c # 文件类型：字符设备
+-type b # 文件类型：块设备
+-type s # 文件类型：套接字
+-type p # 文件类型：FIFO
+-atime # 用户最近一次访问文件的时间，单位：天
+-mtime # 用户最近一次修改文件内容的时间，单位：天
+-ctime # 文件元数据（权限或所有权）最近一次改变的时间，单位：天
+-atime 8  # 用户恰好在8天前访问过文件
+-atime +8 # 用户访问文件的时间超过8天
+-atime -8 # 用户访问文件的时间在最近8天内
+-amin,-mmin,-cmin 同上但是单位是分钟
+-szie 1k # 大小等于1k的文件
+-size +1G # 大小超过1G的文件
+-size -200M # 大小小于200M的文件
+文件大小单元： -b 块（512字节） -c 字节 -w 字（2字节） -k 1024字节 -M 1024K字节 -G 1024M字节
+-delete 删除匹配的文件
+find . \( -name "env" -prune \) -o \( -name "*.py" -print \) #-prune 跳过env目录
 ```
 
 #### uname [-asrmpi]
@@ -568,16 +601,20 @@ date +%Y-%m-%d  # 当日时间 如2020-02-26
 ```
 
 #### xargs
-传递参数
+
+xargs把从stdin接收到的数据重新格式化，再将其作为参数提供给其它命令
+
 ```shell
 -n 指定一次传递几个参数
 -p 每一次构造运行命令都提示
 -d 指定分隔符
 -a 从文件读入参数
+-I 指定替换字符
 
 ls | xargs rm  # 删除当前目录下的文件
 ls | xargs rm -rf # 删除当前目录下的文件和目录
 ls | xargs -n1 -d "\n" -p unar # 解压目录下所有文件
+cat files.txt | xargs -I {} cat {}
 ```
 
 #### ln
@@ -627,10 +664,24 @@ gzip -d file.gz # 解压,同gunzip
 对输入流的字符进行替换，压缩，删除。
 
 ```shell
--s # 把连续重复的字符以单独一个字符表示
+tr [options] set1 set2
+将来自stdin的输入字符从set1映射到set2，然后写入stdout。
+set1和set2是字符类或字符集。如果set2长度小于set1，那么set2会不断重复其最后一个字符直到和set1等长。如果set2
+的长度大于set1，那么超出的部分无效。
 
-例子
+echo "ABCD" | tr "A-Z" "a-z"   # abcd
+echo "ABCD" | tr [:upper:] [:lower:]  # abcd
+
+
+
+-s # 把连续重复的字符以单独一个字符表示
 echo dd0d0ddd | tr -s d  # 输出：d0d0d
+
+-d [set] # 删除在set中存在的字符
+echo "HEllo 123" | tr -d "0-9"  # HEllo
+
+-c [set] # 补集
+echo "hello123" | tr -d -c "0-9 \n"   # 将不在补集里的字符删掉
 
 ```
 
@@ -757,5 +808,10 @@ cat /proc/$PID/environ | tr '\0' '\n'
 # 打印彩色输出
 \e[1;{颜色码}m   将颜色设置成指定颜色。\e[0m重置颜色
 比如： echo -e "\e[1;31m hello" 将输出红色颜色的hello
+```
+
+```shell
+# 统计源代码目录中所有C程序文件的行数
+find source_dir -type f -name "*.c" -print0 | xargs -0 wc -l
 ```
 
