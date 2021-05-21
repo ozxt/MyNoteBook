@@ -209,6 +209,12 @@ ${var#pattern} 从字符串的开头开始非贪婪匹配
 ${var##pattern} 从字符串的开头开始贪婪匹配
 ${var%pattern} 从字符串的末尾开始非贪婪匹配
 ${var%%pattern} 从字符串的末尾开始贪婪匹配
+
+v=abcdabcdefg
+echo ${v#*d}  # abcdefg
+echo ${v##*d}  # efg
+echo ${v%d*}  # abcdabc
+echo ${v%%d*}  # abc
 ```
 
 ```shell
