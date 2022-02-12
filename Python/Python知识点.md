@@ -8,6 +8,19 @@
 列表和元组并不真正存储数据项，而是存放对象引用。
 
 ---
+二维列表： `[[0 for _ in range(3) ] for _ in range(2)]`   # 列表\[2]\[3]
+
+三维列表：`[[[0 for _ in range(3)] for _ in range(3)] for _ in range(2)]`  # 列表\[2]\[3]\[4]
+
+*注意*：
+
+```python
+a = [[0 for _ in range(3)]] * 3
+a[0][0] = 1 # 这样会使每一行第0个元素都变成1，因为 *3 只是把[0 for _ in range(3)]这个列表的引用复制，并没有生成新的。
+```
+
+---
+
 在python中，字符是指长度为1的字符串。
 
 ---
@@ -29,7 +42,7 @@ sorted(l) 不改变l，返回排好序的新的list
 ---
 is和==的区别
 is 本质上比较对象id（调用id()），即比较对象地址
-== 是调用对象的__eq__()方法，a==b  即 a.__eq__(b)
+== 是调用对象的`__eq__()`方法，a==b  即 `a.__eq__(b)`
 
 ---
 字符串拼接：
@@ -86,4 +99,34 @@ class A:
 "{}".format(A())     ->   '__str__ for A'
 f'{A()!r}'      ->   '__repr__ for A'
 ```
+
+---
+
+Python是一门**强类型动态**编程语言。
+
+强类型：比如 1+'a'会报错：`TypeError: unsupported operand type(s) for +: 'int' and 'str'`
+
+动态：可以动态修改函数，对象类型结构，变量类型等，甚至可以动态构造代码执行,比如
+
+```python
+cmd='''
+def say(name):
+	print(f'hello {name}')
+'''
+
+exec(cmd)
+
+say("DD")   #output:  hello DD
+
+```
+
+---
+
+Python变量作用域LEGB：local,enclosing,global,built-in。搜索变量的优先级：L->E->G->B。
+
+**global**声明该变量是全局变量，即模块级别定义的变量。
+
+**nonlocal** 声明该变量是嵌套的父级函数的局部作用域（闭包Enclosing）内的变量。
+
+---
 

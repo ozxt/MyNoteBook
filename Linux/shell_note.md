@@ -821,3 +821,33 @@ cat /proc/$PID/environ | tr '\0' '\n'
 find source_dir -type f -name "*.c" -print0 | xargs -0 wc -l
 ```
 
+```shell
+# 批量重命名
+
+# 把文件名的前三个字母替换成一个v
+for i in `ls`; do mv -f $i `echo $i | sed 's/^.../v/'`; done
+或
+for i in `ls`
+do
+    newfile = `echo $i | sed 's/^./a/'`
+    mv -f $i $newfile
+done
+
+#在文件名前面加一串字符
+for i in `ls`; do mv -f $i `echo abc_$i`;done
+
+#文件名所有小写变大写
+for i in `ls`;do mv -f $i `echo $i | tr 'a-z' 'A-Z'`;done
+
+
+```
+
+```shell
+# 字符串补零
+
+printf "%03d\n" 1  # 001
+
+s=1_13243
+echo ${s%_*} | xargs printf "%02d\n"       # 01
+```
+
