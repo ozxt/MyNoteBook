@@ -462,26 +462,22 @@ basename /home/ozxt/tmp.txt  -->  tmp.txt
 basename /home/ozxt/tmp.txt .txt  -->  tmp
 ```
 
-#### dirname
 
-`dirname` 从路径中提取目录名
-
-```shell
-# 提取文件所在目录
-dirname /home/ozxt/tmp.txt  --> /home/ozxt
-# 提取目录所在目录
-dirname /home/ozxt  --> /home
-```
-
-#### md5sum
-
-计算文件md5值
+#### bzip
+解压缩
 
 ```shell
-md5sum filename
-md5sum -c file.md5sum  # 检查是否一致
+	bzip2 file  # 压缩, 得到file.bz2,file消失
+	bunzip2 file.bz2 # 解压
 ```
 
+
+#### comm
+比较两个文件
+```shell
+comm fileA fileB #输出N行3列，从左到右，第一列为只在fileA出现的行，第二列为只在fileB出现的行，第三列为交集
+comm fileA fileB -1 -2 -3 #调整输出，-N为不输出第N行
+```
 
 
 #### cut
@@ -521,19 +517,41 @@ date "+%d %B %Y"
 | Unix纪元时（秒）       | %s                              |
 
 
+#### dirname
 
-#### grep
+`dirname` 从路径中提取目录名
+
+```shell
+# 提取文件所在目录
+dirname /home/ozxt/tmp.txt  --> /home/ozxt
+# 提取目录所在目录
+dirname /home/ozxt  --> /home
+```
+
+
+#### du
+显示目录大小
+```shell
+-m    以MB为单位
+-k    以GB为单位
+--max-depth  表示只深入到第n层目录。设置为0时表示不深入到子目录。
+
+
+du -h --max-depth 1    显示当前目录下的目录大小
+```
 
 
 #### exit
 
 `exit status_code  #退出脚本，返回一个0-255的数字 `
 
+
 #### eval
 
 构造命令
 
 举例：`eval find $opt`
+
 
 #### find
 `find [path] [option] [action]`
@@ -569,15 +587,47 @@ find /home ! -name "*.txt"  # /home目录下不是以“.txt”结尾的文件
 find . \( -name "env" -prune \) -o \( -name "*.py" -print \) #-prune 跳过env目录
 ```
 
-#### uname [-asrmpi]
 
-查看系统与内核相关信息
+#### grep
 
-`uname -a`  # 所有相关信息
 
-#### uptime
+#### gzip
+解压缩
 
-系统启动时间与工作负载
+```shell
+gzip file    # 压缩, 得到file.gz, file消失
+gunzip file.gz # 解压, 得到file, file.gz消失
+gzip -d file.gz # 解压,同gunzip
+-f # 强制压缩,即便已有一个压缩版本存在
+-l # 列出压缩包里的文件
+-t # 测试压缩包的完整性
+-v # 显示压缩信息
+```
+
+
+#### ln
+创建链接（软/硬）
+```shell
+# 创建硬链接
+ln file link
+# 创建软链接(符号链接)
+ln -s file link
+```
+
+硬链接：默认下，每个文件都有一个硬链接。当我们创建硬链接时，我们是**create an addtional directory entry for a file** （硬链接和被引用文件是同一个inode），它有两个特点：1，硬链接不能链接非同一文件系统的文件，就是不能在A分区创建硬链接引用B分区的文件。2，硬链接不能引用目录。**修改硬链接等同于修改被引用文件,删除被引用文件，链接依然有效**
+
+软链接：软链接使用了一个特殊类型的新文件，该文件包含指针指向被链接的文件或目录。（有点像win的桌面快捷方式）。**修改软链接就是修改被引用文件，删除被引用文件，链接就会失效***
+
+
+#### md5sum
+
+计算文件md5值
+
+```shell
+md5sum filename
+md5sum -c file.md5sum  # 检查是否一致
+```
+
 
 #### netstat
 
@@ -600,62 +650,115 @@ netstat -ntu | grep :80 | awk '{print $5}' | cut -d: -f1 | awk '{++ip[$1]} END {
 
 ```
 
-#### date
-日期时间
+
+#### rsync
+备份
 ```shell
-date +%Y-%m-%d  # 当日时间 如2020-02-26
+rsync -av source destination  # 把source目录(目录本身)递归地复制到destination。
+rsync -av source/ destination  # 把./source目录下的内容递归地复制到destination。
+rsync -av source/ username@remote_host:destination # 远程同步
+--delete  # 删除只存在于目标目录、不存在于源目录的文件。
+--exclude "*.txt"  # 添加该选项指定通配符以排除备份。该例不对以.txt结尾的文件备份。
+--exclude {"*.txt","*.cache","tmp"}
+--exclude-from pattern_file  #或者指定一个列表文件，内里指定要排除的文件# 
+-r # 表示递归子目录
+-a # 可替代-r，除了递归同步外，还会同步元信息（比如修改时间，权限）。
 ```
 
-#### xargs
 
-xargs把从stdin接收到的数据重新格式化，再将其作为参数提供给其它命令
+#### sed
 
-```shell
--n 指定一次传递几个参数
--p 每一次构造运行命令都提示
--d 指定分隔符
--a 从文件读入参数
--I 指定替换字符
+流编辑器stream editor
 
-ls | xargs rm  # 删除当前目录下的文件
-ls | xargs rm -rf # 删除当前目录下的文件和目录
-ls | xargs -n1 -d "\n" -p unar # 解压目录下所有文件
-cat files.txt | xargs -I {} cat {}
-```
-
-#### ln
-创建链接（软/硬）
-```shell
-# 创建硬链接
-ln file link
-# 创建软链接(符号链接)
-ln -s file link
-```
-
-硬链接：默认下，每个文件都有一个硬链接。当我们创建硬链接时，我们是**create an addtional directory entry for a file** （硬链接和被引用文件是同一个inode），它有两个特点：1，硬链接不能链接非同一文件系统的文件，就是不能在A分区创建硬链接引用B分区的文件。2，硬链接不能引用目录。**修改硬链接等同于修改被引用文件,删除被引用文件，链接依然有效**
-
-软链接：软链接使用了一个特殊类型的新文件，该文件包含指针指向被链接的文件或目录。（有点像win的桌面快捷方式）。**修改软链接就是修改被引用文件，删除被引用文件，链接就会失效***
-
-#### gzip
-解压缩
+可以对输入流（文件或管道）逐行处理
 
 ```shell
-gzip file    # 压缩, 得到file.gz, file消失
-gunzip file.gz # 解压, 得到file, file.gz消失
-gzip -d file.gz # 解压,同gunzip
--f # 强制压缩,即便已有一个压缩版本存在
--l # 列出压缩包里的文件
--t # 测试压缩包的完整性
--v # 显示压缩信息
+语法格式
+stdout | sed [OPTIONS] SCRIPT
+或
+sed [OPTIONS] SCRIPT file
+
+SCRIPT的格式  [addr]X[options]
+	X是命令。
+	addr是行地址，用于选择某些行用X命令进行处理，若无指定则处理所有行。
+	options在某些命令中使用。
+	在一个SCRIPT中可以使用多个command,commad之间有分号;隔开。有时command的顺序会影响输出，需要注意。
+
+sed -n '/var/s/mail/MAIL/gp' passwd  # /var/是addr，s/mail/MAIL/gp是command。对于passwd文件中包含var字符串的行，使用commad处理。
+
+sed '/^foo/d ; s/hello/world/' input.txt # 删除所有以foo开头的行，并把所有行中第一个hello换成world
+
+OPTIONS:
+-n, --quiet, --silent 默认情况下，sed会在每一次SCRIPT处理完当前行后输出当前行（对于匹配的行会输出两次，没匹配的也会输出一次）。使用这些选项可以抑制输入行的再输出，只有在使用命令p时才会输出。
+--debug  调试信息，显示sed运行过程
+-e 增加script,默认为一个script不用写-e
+-f 指定一个文件读取script,通常这个文件为.sed文件
+-i 将处理后的输入流写入原文件，而不是输出到标准输出
+-E, -r, --regexp-extended 使用扩展正则，默认是基本正则
+
+[addr]：
+单个数字选择某一行  
+	sed -n '2p' file  # 打印file的第二行
+	sed -n '$p' file  # 打印输入流（文件）最后一行
+数字范围选择的某些行  sed
+	sed -n '2,4p' file # 打印输入流（文件）第2到4行
+	sed -n '1,10d' file # 删除输入流第1到10行
+正则表达式选择匹配的行
+	sed -n '/^root/p' passwd # 打印以root开头的行
+	sed -n '/^root/,/^sync/ p' passwd # 打印从root开头的行到sync开头的行之间所有行
+
+[X] command:
+s/REGEXP/REPLACEMENT/[FLAGS]  替换
+g  表示行内全面替换 		sed 's/a/A/g' file
+p  打印处理后的行   		 sed 'p' file
+w  将输出写入到另一个文件   sed 's/a/A/w wfile' file
+d  删除行
+q[EXIT_CODE]  退出sed不再继续处理，返回EXIT_CODE
+=  输出行号			sed -n '/root/=' file
+
+
+关于更多的command 's':
+格式 s/REGEXP/REPLACEMENT/[FLAGS]
+
+Its basic concept is simple: the 's' command attempts to match the pattern space against the supplied regular expression REGEXP; if the match is successful, then that portion of the pattern space which was matched is replaced with REPLACEMENT.
+
+FLAGS：
+无		s/regex/repl/ 替换行的第一个匹配
+g		s/regex/repl/g 替换行的全部匹配
+NUMBER		s/regex/repl/NUMBER 替换行的第NUMBER个匹配
+p		s/regex/repl/p  打印替换后的行
+w FILENAME     s/regex/repl/w FILENAME  把替换后的行写入FILENMAE文件
+i/I		s/regex/repl/i   忽略大小写来进行匹配
 ```
 
-#### bzip
-解压缩
+
+#### sort
+排序
+```shell
+-n 按数值的大小排序
+-r 以相反的顺序输出（默认增序）
+-u 排序并去重
+```
+
+
+#### systemctl
+
+Control the systemd system and service manager
 
 ```shell
-	bzip2 file  # 压缩, 得到file.bz2,file消失
-	bunzip2 file.bz2 # 解压
+语法
+systemctl [OPTIONS...] COMMAND [UNIT...]
+
+systemctl list-units  # 列出服务
+systemctl status mysql.service  # 查看服务状态 
+systemctl start mysql.service  # 启动服务 
+systemctl stop mysql.service  # 关闭服务 
+systemctl restart mysql.service  # 重启服务 
+systemctl disable mysql.service  # 禁止自启 
+systemctl enable mysql.service  # 恢复自启 
+
 ```
+
 
 #### tar
 
@@ -664,6 +767,18 @@ gzip -d file.gz # 解压,同gunzip
 ```shell
 
 ```
+
+
+#### tee
+
+读取stdin流，重定向到文件，并提供一份给后续命令作为stdin
+
+```shell
+-n # 追加写
+
+ls | tee output | cat -n
+```
+
 
 #### tr
 
@@ -691,78 +806,12 @@ echo "hello123" | tr -d -c "0-9 \n"   # 将不在补集里的字符删掉
 
 ```
 
-#### tee
 
-读取stdin流，重定向到文件，并提供一份给后续命令作为stdin
+#### uname [-asrmpi]
 
-```shell
--n # 追加写
+查看系统与内核相关信息
 
-ls | tee output | cat -n
-```
-
-
-
-#### sed
-
-流编辑器
-
-```shell
--i 将处理后的文件写入原文件
--n 或--quiet或--silent  仅显示处理后的结果
--f 指定一个script文件读入模式
-
-命令
-s/regex/repl/ 替换（行的第一个匹配）
-s/regex/repl/g 替换全部（行的全部匹配）
-g  表示行内全面替换 sed 's/a/A/g' file
-p  打印行    sed 'p' file
-w  写入一个文件   's/a/A/w wfile'
-
-例子
-sed -n 1p  # 打印输入流第一行
-sed -n 2,4p  # 打印输入流第2到4行
-
-
-```
-
-#### du
-显示目录大小
-```shell
--m    以MB为单位
--k    以GB为单位
---max-depth  表示只深入到第n层目录。设置为0时表示不深入到子目录。
-
-
-du -h --max-depth 1    显示当前目录下的目录大小
-```
-
-#### sort
-排序
-```shell
--n 按数值的大小排序
--r 以相反的顺序输出（默认增序）
--u 排序并去重
-```
-
-#### systemctl
-
-Control the systemd system and service manager
-
-```shell
-语法
-systemctl [OPTIONS...] COMMAND [UNIT...]
-
-systemctl list-units  # 列出服务
-systemctl status mysql.service  # 查看服务状态 
-systemctl start mysql.service  # 启动服务 
-systemctl stop mysql.service  # 关闭服务 
-systemctl restart mysql.service  # 重启服务 
-systemctl disable mysql.service  # 禁止自启 
-systemctl enable mysql.service  # 恢复自启 
-
-```
-
+`uname -a`  # 所有相关信息
 
 
 #### uniq
@@ -777,26 +826,30 @@ systemctl enable mysql.service  # 恢复自启
 echo "aab\naaa" | uniq -w 2  # output:aab 
 ```
 
-#### comm
-比较两个文件
+
+#### uptime
+
+系统启动时间与工作负载
+
+
+#### xargs
+
+xargs把从stdin接收到的数据重新格式化，再将其作为参数提供给其它命令
+
 ```shell
-comm fileA fileB #输出N行3列，从左到右，第一列为只在fileA出现的行，第二列为只在fileB出现的行，第三列为交集
-comm fileA fileB -1 -2 -3 #调整输出，-N为不输出第N行
+-n 指定一次传递几个参数
+-p 每一次构造运行命令都提示
+-d 指定分隔符
+-a 从文件读入参数
+-I 指定替换字符
+
+ls | xargs rm  # 删除当前目录下的文件
+ls | xargs rm -rf # 删除当前目录下的文件和目录
+ls | xargs -n1 -d "\n" -p unar # 解压目录下所有文件
+cat files.txt | xargs -I {} cat {}
 ```
 
-#### rsync
-备份
-```shell
-rsync -av source destination  # 把source目录(目录本身)递归地复制到destination。
-rsync -av source/ destination  # 把./source目录下的内容递归地复制到destination。
-rsync -av source/ username@remote_host:destination # 远程同步
---delete  # 删除只存在于目标目录、不存在于源目录的文件。
---exclude "*.txt"  # 添加该选项指定通配符以排除备份。该例不对以.txt结尾的文件备份。
---exclude {"*.txt","*.cache","tmp"}
---exclude-from pattern_file  #或者指定一个列表文件，内里指定要排除的文件# 
--r # 表示递归子目录
--a # 可替代-r，除了递归同步外，还会同步元信息（比如修改时间，权限）。
-```
+
 
 ## 常用命令
 
@@ -824,7 +877,10 @@ find source_dir -type f -name "*.c" -print0 | xargs -0 wc -l
 ```shell
 # 批量重命名
 
+
+
 # 把文件名的前三个字母替换成一个v
+# 对于文件名中有空格的情况，先 IFS=$'\n' 
 for i in `ls`; do mv -f $i `echo $i | sed 's/^.../v/'`; done
 或
 for i in `ls`
@@ -850,4 +906,36 @@ printf "%03d\n" 1  # 001
 s=1_13243
 echo ${s%_*} | xargs printf "%02d\n"       # 01
 ```
+
+
+
+```shell
+# 重复执行命令
+
+# 重复运行10次test_QuickSort.py
+for i in {1..10}; do python3 ./test_QuickSort.py ; done;
+或
+for i in `seq 1 10`; do python3 ./test_QuickSort.py ; done;
+```
+
+
+
+```shell
+# 硬件检测
+
+# 列出硬件信息
+lshw
+
+# CPU
+lscpu
+
+# 硬盘
+# 查看硬盘信息
+hdparm -I /dev/sda
+# 测试硬盘传输速度
+hdparm -tT /dev/sda
+# GUI工具 磁盘/disk 也可以查看测试硬盘
+```
+
+
 
