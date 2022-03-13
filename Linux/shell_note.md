@@ -713,11 +713,10 @@ OPTIONS:
 	sed -n '/^root/,/^sync/ p' passwd # 打印从root开头的行到sync开头的行之间所有行
 
 [X] command:
-s/REGEXP/REPLACEMENT/[FLAGS]  替换
-g  表示行内全面替换 		sed 's/a/A/g' file
-p  打印处理后的行   		 sed 'p' file
-w  将输出写入到另一个文件   sed 's/a/A/w wfile' file
-d  删除行
+s/REGEXP/REPLACEMENT/[FLAGS]  正则替换，REPLACEMENT替换REGEXP匹配的内容
+c  [options]  用 [options]替换整行
+p  打印当前pattern_space   		 sed 'p' file
+d  删除整行
 q[EXIT_CODE]  退出sed不再继续处理，返回EXIT_CODE
 =  输出行号			sed -n '/root/=' file
 
@@ -726,6 +725,22 @@ q[EXIT_CODE]  退出sed不再继续处理，返回EXIT_CODE
 格式 s/REGEXP/REPLACEMENT/[FLAGS]
 
 Its basic concept is simple: the 's' command attempts to match the pattern space against the supplied regular expression REGEXP; if the match is successful, then that portion of the pattern space which was matched is replaced with REPLACEMENT.
+
+REGEXP：正则表达式，匹配的内容会被REPLACEMENT替换
+REPLACEMENT：
+	字符串：直接替换
+	\n：n的取值1~9，引用匹配分组的内容
+		echo "python" | sed -r 's/(py)/ww\1\1/'
+	&: 引用整个匹配内容
+		echo "python" | sed -r 's/.*/&3/'
+	\L: 将后面的内容转为小写，直到遇到\U或\E结束
+	\l: 将后面的一个字符转为小写 
+	\U: 将后面的内容转为大写，直到遇到\L或\E结束 
+	\u: 将后面的一个字符转为大写 
+	\E: 结束\L,\U的转换
+		echo "python" | sed -r 's/.*/\u&3/'
+		echo "python asyncio" | sed -r 's/(python) (asyncio)/\U\1\E\2/'
+		echo "python asyncio" | sed -r 's/(\b[^\s])/\u\1/g'  # 将所有单词首字母大写
 
 FLAGS：
 无		s/regex/repl/ 替换行的第一个匹配
@@ -881,8 +896,6 @@ find source_dir -type f -name "*.c" -print0 | xargs -0 wc -l
 
 ```shell
 # 批量重命名
-
-
 
 # 把文件名的前三个字母替换成一个v
 # 对于文件名中有空格的情况，先 IFS=$'\n' 
