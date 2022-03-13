@@ -673,6 +673,11 @@ rsync -av source/ username@remote_host:destination # 远程同步
 可以对输入流（文件或管道）逐行处理
 
 ```shell
+'sed' operates by performing the following cycle on each line of input: first, 'sed' reads one line from the input stream, removes any trailing newline, and places it in the pattern space.  Then commands are executed; each command can have an address associated to it: addresses are a kind of condition code, and a command is only executed if the condition is verified before the command is to be executed.When the end of the script is reached, unless the '-n' option is in use, the contents of pattern space are printed out to the output stream, adding back the trailing newline if it was removed.(1)  Then the next
+cycle starts for the next input line.
+
+sed的工作过程：sed维护了两个数据缓冲区pattern_space和hold_space,两个缓冲区初始为空。对于输入流，sed会循环执行: 从输入流里读取一行数据，去掉数据末尾的换行符，放到pattern_space里；然后运行SCRIPT处理pattern_space；当所有SCRIPT运行完，（若没有指定-n）会把pattern_space里的数据输出（默认是标准输出）。
+
 语法格式
 stdout | sed [OPTIONS] SCRIPT
 或
@@ -689,7 +694,7 @@ sed -n '/var/s/mail/MAIL/gp' passwd  # /var/是addr，s/mail/MAIL/gp是command�
 sed '/^foo/d ; s/hello/world/' input.txt # 删除所有以foo开头的行，并把所有行中第一个hello换成world
 
 OPTIONS:
--n, --quiet, --silent 默认情况下，sed会在每一次SCRIPT处理完当前行后输出当前行（对于匹配的行会输出两次，没匹配的也会输出一次）。使用这些选项可以抑制输入行的再输出，只有在使用命令p时才会输出。
+-n, --quiet, --silent 默认情况下sed会在SCRIPT运行完后，输出当前pattern_space。若使用了这些选项，则会抑制这种输出。该选项常和p命令合用。
 --debug  调试信息，显示sed运行过程
 -e 增加script,默认为一个script不用写-e
 -f 指定一个文件读取script,通常这个文件为.sed文件
