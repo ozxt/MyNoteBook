@@ -467,8 +467,8 @@ basename /home/ozxt/tmp.txt .txt  -->  tmp
 解压缩
 
 ```shell
-	bzip2 file  # 压缩, 得到file.bz2,file消失
-	bunzip2 file.bz2 # 解压
+bzip2 file  # 压缩, 得到file.bz2,file消失
+bunzip2 file.bz2 # 解压
 ```
 
 
@@ -494,7 +494,6 @@ comm fileA fileB -1 -2 -3 #调整输出，-N为不输出第N行
 #### date
 
 在类Unix系统中，日期被存储成一个整数，其大小是自时间标准时间（UTC）1970年1月1日0时0分0秒起所流逝的秒数。这个值称为纪元时或Unix时间。
-
 ```shell
 date   # 日期 2021年 05月 12日 星期三 15:02:55 CST
 date +%s    # 打印纪元时  1620803172
@@ -516,6 +515,32 @@ date "+%d %B %Y"
 | 纳秒                   | %N                              |
 | Unix纪元时（秒）       | %s                              |
 
+#### dd
+
+```shell
+Copy a file, converting and formatting according to the operands.
+语法格式：
+1，dd [OPERAND]...
+2，dd OPTION
+
+if=FILE
+	从FILE读入，而非stdin
+of=FILE
+	写入FILE，而非stdout
+bs=BYTES
+	一次读写BYTES个字节（默认512）；会覆盖ibs和obs
+ibs=BYTES
+	一次读BYTES个字节（默认512）
+obs=BYTES
+	一次写BYTES个字节（默认512）
+count=N
+	只复制N次输入block
+skip=N
+	跳过输入的前N个blcok
+seek=N
+	跳过输出的前N个blcok
+
+```
 
 #### dirname
 
@@ -604,8 +629,16 @@ gzip -d file.gz # 解压,同gunzip
 -v # 显示压缩信息
 ```
 
+#### hexdump
+
+```shell
+-C 每个字节显示为16进制和相应的ASCII字符
+```
+
+
 
 #### ln
+
 创建链接（软/硬）
 ```shell
 # 创建硬链接
@@ -684,8 +717,8 @@ stdout | sed [OPTIONS] SCRIPT
 sed [OPTIONS] SCRIPT file
 
 SCRIPT的格式  [addr]X[options]
-	X是命令。
-	addr是行地址，用于选择某些行用X命令进行处理，若无指定则处理所有行。
+	X是单字母命令。
+	addr是可选的行地址，用于选择某些行用X命令进行处理，若无指定则处理所有行。
 	options在某些命令中使用。
 	在一个SCRIPT中可以使用多个command,commad之间有分号;隔开。有时command的顺序会影响输出，需要注意。
 
@@ -693,10 +726,10 @@ sed -n '/var/s/mail/MAIL/gp' passwd  # /var/是addr，s/mail/MAIL/gp是command�
 
 sed '/^foo/d ; s/hello/world/' input.txt # 删除所有以foo开头的行，并把所有行中第一个hello换成world
 
-OPTIONS:
+sed OPTIONS:
 -n, --quiet, --silent 默认情况下sed会在SCRIPT运行完后，输出当前pattern_space。若使用了这些选项，则会抑制这种输出。该选项常和p命令合用。
 --debug  调试信息，显示sed运行过程
--e 增加script,默认为一个script不用写-e
+-e 增加script,默认为一个script不用写-e   seq 6 | sed -e 1d -e 3d -e 5d
 -f 指定一个文件读取script,通常这个文件为.sed文件
 -i 将处理后的输入流写入原文件，而不是输出到标准输出
 -E, -r, --regexp-extended 使用扩展正则，默认是基本正则
@@ -712,9 +745,10 @@ OPTIONS:
 	sed -n '/^root/p' passwd # 打印以root开头的行
 	sed -n '/^root/,/^sync/ p' passwd # 打印从root开头的行到sync开头的行之间所有行
 
-[X] command:
+[X]:
 s/REGEXP/REPLACEMENT/[FLAGS]  正则替换，REPLACEMENT替换REGEXP匹配的内容
 c  [options]  用 [options]替换整行
+y/src/dst/  把pattern_space中出现在src的字符，用dst对应的字符替代
 p  打印当前pattern_space   		 sed 'p' file
 d  删除整行
 q[EXIT_CODE]  退出sed不再继续处理，返回EXIT_CODE
@@ -956,4 +990,34 @@ hdparm -tT /dev/sda
 ```
 
 
+
+```shell
+# 下载
+
+# aria2
+# 直接跟下载地址，在当前工作目录下载文件
+aria2c download_url
+aria2c -c -s 4 -x 4 download_url
+--out 重命名文件
+-s 使用几个连接
+-x 每个下载对同一服务器的最大连接数
+-c 端点续传
+```
+
+```shell
+# 分区表
+
+fdisk /dev/sda
+
+# 读取GPT表
+sudo dd if=/dev/sda of=./gpttable.dump bs=512 count=36
+
+# 读取 备份的GPT
+fdisk /dev/sda
+p打印分区表，'替代 LBA'项指的是备份GPT表头在硬盘的位置（记作lba_bak_gpt_header），'第一个LBA'值得是第一个可用作存储文件数据的逻辑块，也代表了整个GPT的LBA块数(记作n)。备份的GPT没有备份PMBR，所以备份的GPT的size就是n-1。备份的gpt，从硬盘末尾开始记录，表头前面放着表项，所以备份gpt的起始位置是lba_bak_gpt_header+1-(n-1)
+或者
+'最后一个LBA'表示硬盘最后一个可用作存储文件的LBA（记作last_usable_lba），紧接着表示备份GPT的第一个表项，所以备份gpt的起始位置是last_usable_lba+1
+
+sudo dd if=/dev/sda of=./bak_gpttable.dump skip=1000215183 bs=512 count=33
+```
 
