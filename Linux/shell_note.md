@@ -819,7 +819,9 @@ systemctl enable mysql.service  # 恢复自启
 打包
 
 ```shell
-
+压　缩：tar -jcv -f filename.tar.bz2 要被压缩的文件或目录名称
+查　询：tar -jtv -f filename.tar.bz2
+解压缩：tar -jxv -f filename.tar.bz2 -C 欲解压缩的目录
 ```
 
 
