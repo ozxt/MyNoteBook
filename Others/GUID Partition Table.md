@@ -16,7 +16,7 @@ GPT是EFI的一部分；EFI使用GPT，BIOS（也就是Legacy）使用MBR。
 
 > GPT uses modern **logical block addressing (LBA)** in place of the cylinder-head-sector (CHS) addressing used with old MBRs (modern MBRs can use LBA). **Legacy MBR information is contained in LBA 0, the GPT header is in LBA 1, and the partition table itself follows. In 64-bit Windows operating systems, 16,384 bytes, or 32 sectors, are reserved for the GPT, leaving LBA 34 as the first usable sector on the disk.**
 
-GPT使用逻辑块寻址（LBA），早期的MBR使用CHS寻址（柱面-磁头-扇区）（现代的MBE也用LBA了）。
+GPT使用逻辑块寻址（LBA），早期的MBR使用CHS寻址（柱面-磁头-扇区）（现代的MBR也用LBA了）。
 
 对于GPT，LBA 0位置存储传统的MBR，GPT header存在LBA 1位置，接着是分区表项。在64bit windows里，16384个字节或者32个扇区用于放置GPT表项。所以第一个可用的扇区在LBA 34位置（1+1+32个逻辑块，0~33）
 
