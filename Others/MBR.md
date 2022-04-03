@@ -69,6 +69,21 @@ Note: it is intended for the value of DL, and the DS:SI pointer to be passed all
 note：
 
 1. 如果忽略0x1B8和0x1BC的6个字节，MBR Bootstrap可以扩展到446个字节。
-
 2. 虽然分区表有1234，但那只是为了便利，顺序并不重要。
 3. 任何一个分区都可能是active。应该有且仅有一个分区表是active
+4. 以CHS方式表示的扇区位置称为绝对扇区号，是扇区在磁盘中的物理地址；以LBA表示的扇区位置称为相对扇区号，是扇区在磁盘中的逻辑地址。
+
+### Partition Types 对应代码
+
+[参考网址 Listing of MBR/EBR Partition Types](https://thestarman.pcministry.com/asm/mbr/PartTypes.htm)
+
+注意 分区类型值不必特指一种文件系统类型。
+
+| Partition Types Value | Description                                   |
+| --------------------- | --------------------------------------------- |
+| 0x00                  | 不表示一个未知文件系统，而表示一个empty entry |
+| 0x06/0x0E             | FAT16                                         |
+| 0x07                  | NTFS或ExFAT                                   |
+| 0x0B/0x0C             | FAT32                                         |
+| 0x0F                  | 扩展分区                                      |
+
