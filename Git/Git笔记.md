@@ -73,17 +73,35 @@ git rm -f readme.txt  删除readme.txt的跟踪，并保留在本地。
 
 撤销工作区的修改（git add前）：git checkout -- filename
 
-撤销stage里的修改（git add后 commit前）：git reset HEAD filename
-
-将版本回退到上一个版本 git reset --hard HEAD^ ；
-
 HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版本
-
-跳到某一个版本  git reset --hard 12ea  (12ea是要跳到的那个版本的commit id前四位)
 
 移动文件(改名)： git mv srcname dstname
 
 ---
+
+#### git reset
+
+当提交了一个错误的commit，一个做法是修改代码再提交一次，但是这样log里面会有那次错误提交的记录。另一种是使用git reset。
+
+>git-reset - Reset current HEAD to the specified state
+
+修改HEAD的指向。有三种模式：mixed，hard，soft
+
+![git reset 三种模式](PICTURES/git reset 三种模式.png)
+
+**reset --hard** 会在重置 HEAD 和branch的同时，**重置stage区和工作目录里的内容**。所以使用时要注意未add和为commit的代码。
+
+git reset --hard HEAD~1  # 完全重置成上个版本
+
+git reset --hard 12ea  # 完全跳到某一个版本  (12ea是要跳到的那个版本的commit id前四位) 
+
+**reset --soft** 会在重置 HEAD 和 branch 时，**保留工作目录和暂存区中的内容**，**并把重置 HEAD 所带来的新的差异放进暂存区。**
+
+**reset 如果不加参数，那么默认使用 --mixed 参数**。它的行为是：**保留工作目录，并且清空暂存区。**也就是说，工作目录的修改、暂存区的内容以及由 reset 所导致的新的文件差异，都会被放进工作目录。简而言之，就是「把所有差异都混合（mixed）放在工作目录中」。
+
+---
+
+
 
 #### git diff
 
@@ -92,6 +110,13 @@ HEAD 当前版本  HEAD^上个版本  HEAD^^ 上上个版本  HEAD~40上40个版
 
 ---
 
+#### git show
+
+git show commit_id  	# 查看某一次提交
+
+git show HEAD   	# 查看最新一次提交
+
+---
 远程仓库使用的 Git 保存的简写与其对应的 URL:    git remote
 
 添加一个新的远程 Git 仓库，同时指定一个你可以轻松引用的简写shortname: `git remote add  shortname url`
