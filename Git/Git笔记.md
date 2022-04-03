@@ -61,7 +61,7 @@ git rm -f readme.txt  删除readme.txt的跟踪，并保留在本地。
 
 ---
 
-#### git commit --amend 修正最近一次提交
+#### git commit --amend 修正最近一次提交/提交信息写错了
 
 - 想修改最近一次提交的提交信息,只需`git commit --amend`，在弹出的编辑器里修改提交信息，保存退出就可了。
 - 想要修改最后一次提交的实际内容: 修改文件内容后，暂存git add，再`git commit --amend`，还可再修改提交信息。
